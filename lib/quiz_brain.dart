@@ -32,12 +32,18 @@ class QuizBrain {
   
   Question _getQuestion() => _questions[_questionNumber % _questions.length];
 
-  String getQuestionText() => _getQuestion().questionText;
-  bool getCorrectAnswer() => _getQuestion().questionAnswer;
+  String getQuestionText() => _getQuestion().text;
+  bool getCorrectAnswer() => _getQuestion().answer;
 
-  void nextQuestion() {
+  bool nextQuestion() {
     if (_questionNumber < _questions.length - 1) {
       _questionNumber++;
+      return true;
     }
+    return false;
+  }
+
+  void reset() {
+    _questionNumber = 0;
   }
 }

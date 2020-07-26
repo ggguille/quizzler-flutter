@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
 
 void main() => runApp(Quizzler());
@@ -27,23 +28,49 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
 
-  List<Widget> scoreKeeper = [];
+  List<Widget> _scoreKeeper = [];
 
-  QuizBrain quizBrain = QuizBrain();
+  QuizBrain _quizBrain = QuizBrain();
+  
+  void restart() {
+    setState(() {
+      _quizBrain.reset();
+      _scoreKeeper = [];
+    });
+  }
 
   void checkAnswer(bool userPickedAnswer) {
-    final bool correctAnswer = quizBrain.getCorrectAnswer();
+    final bool correctAnswer = _quizBrain.getCorrectAnswer();
     setState(() {
       if (userPickedAnswer == correctAnswer) {
-        scoreKeeper.add(
+        _scoreKeeper.add(
             Icon(Icons.check, color: Colors.green)
         );
       } else {
-        scoreKeeper.add(
+        _scoreKeeper.add(
             Icon(Icons.close, color: Colors.red)
         );
       }
-      quizBrain.nextQuestion();
+      if (!_quizBrain.nextQuestion()) {
+        Alert(
+          context: context,
+          title: "Finished!",
+          desc: "You've reached the end of the quiz.",
+          closeFunction: restart,
+          buttons: [
+            DialogButton(
+              child: Text(
+                "Restart",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                restart();
+              }
+            )
+          ]
+        ).show();
+      }
     });
   }
 
@@ -59,7 +86,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                quizBrain.getQuestionText(),
+                _quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -109,7 +136,7 @@ class _QuizPageState extends State<QuizPage> {
           ),
         ),
         Row(
-          children: scoreKeeper,
+          children: _scoreKeeper,
         )
       ],
     );
